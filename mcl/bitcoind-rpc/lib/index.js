@@ -214,6 +214,7 @@ RpcClient.callspec = {
   walletLock: '',
   walletPassPhrase: 'string int',
   walletPassphraseChange: '',
+  marmaraAmountStat: '',
 };
 
 var slice = function(arr, start, end) {
