@@ -165,6 +165,7 @@ Bitcoin.prototype.getAPIMethods = function() {
     ['getBestBlockHash', this, this.getBestBlockHash, 0],
     ['getSpentInfo', this, this.getSpentInfo, 1],
     ['getInfo', this, this.getInfo, 0],
+    ['marmaraAmountStat', this, this.marmaraAmountStat, 0],
     ['syncPercentage', this, this.syncPercentage, 0],
     ['isSynced', this, this.isSynced, 0],
     ['getRawTransaction', this, this.getRawTransaction, 1],
@@ -2101,6 +2102,18 @@ Bitcoin.prototype.getInfo = function(callback) {
       network: self.node.getNetworkName(),
       notarized: result.notarized,
     };
+    callback(null, info);
+  });
+};
+
+Bitcoin.prototype.getMarmaraAmountStat = function(callback) {
+  var self = this;
+  this.client.getMarmaraAmountStat(function(err, response) {
+    if (err) {
+      return callback(self._wrapRPCError(err));
+    }
+    var result = response.result;
+    var info = result;
     callback(null, info);
   });
 };
