@@ -13,6 +13,7 @@ var StatusController = require('./status');
 var MessagesController = require('./messages');
 var UtilsController = require('./utils');
 var CurrencyController = require('./currency');
+var StatsController = require('./stats');
 var RateLimiter = require('./ratelimiter');
 var morgan = require('morgan');
 var bitcore = require('bitcore-lib-komodo');
@@ -228,6 +229,16 @@ InsightAPI.prototype.setupRoutes = function(app) {
   app.get('/sync', this.cacheShort(), status.sync.bind(status));
   app.get('/peer', this.cacheShort(), status.peer.bind(status));
   app.get('/version', this.cacheShort(), status.version.bind(status));
+
+  // Marmara stats route
+  var stats = new StatsController(this.node);
+  
+  stats.marmaraAmountStat();
+  setInterval(function () {
+    console.log('sync syncMarmaraAmountStat');
+    stats.marmaraAmountStat(null, true);
+  }, 120 * 1000); // every 120s
+  app.get('/stats', this.cacheShort(), stats.showStats.bind(stats));
 
   // Address routes
   var messages = new MessagesController(this.node);
