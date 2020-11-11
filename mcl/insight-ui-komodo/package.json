@@ -1,0 +1,86 @@
+{
+  "_from": "git+https://git@github.com/DeckerSU/insight-ui-komodo.git",
+  "_id": "insight-ui-komodo@0.4.0",
+  "_inBundle": false,
+  "_integrity": "",
+  "_location": "/insight-ui-komodo",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "git",
+    "raw": "git+https://git@github.com/DeckerSU/insight-ui-komodo",
+    "rawSpec": "git+https://git@github.com/DeckerSU/insight-ui-komodo",
+    "saveSpec": "git+https://git@github.com/DeckerSU/insight-ui-komodo.git",
+    "fetchSpec": "https://git@github.com/DeckerSU/insight-ui-komodo.git",
+    "gitCommittish": null
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "git+https://git@github.com/DeckerSU/insight-ui-komodo.git#3be8e91f8302169e4dcfaf14f3ecebac05f7f833",
+  "_spec": "git+https://git@github.com/DeckerSU/insight-ui-komodo",
+  "_where": "/Users/pbca26/Documents/insight-explorer/MORTY-explorer",
+  "bitcoreNode": "bitcore-node-komodo",
+  "bugs": {
+    "url": "https://github.com/supernetorg/insight-ui-komodo/issues"
+  },
+  "bundleDependencies": false,
+  "contributors": [
+    {
+      "name": "Matias Alejo Garcia",
+      "email": "ematiu@gmail.com"
+    },
+    {
+      "name": "Manuel Araoz",
+      "email": "manuelaraoz@gmail.com"
+    },
+    {
+      "name": "Mario Colque",
+      "email": "colquemario@gmail.com"
+    },
+    {
+      "name": "Gustavo Cortez",
+      "email": "cmgustavo83@gmail.com"
+    },
+    {
+      "name": "Juan Ignacio Sosa Lopez",
+      "email": "bechilandia@gmail.com"
+    },
+    {
+      "name": "Jack Grigg",
+      "email": "jack@z.cash"
+    }
+  ],
+  "dependencies": {},
+  "deprecated": false,
+  "description": "An open-source frontend for the Insight API. The Insight API provides you with a convenient, powerful and simple way to query and broadcast data on the komodo network and build your own services with it.",
+  "devDependencies": {
+    "bower": "~1.2.8",
+    "grunt": "~0.4.2",
+    "grunt-cli": "~0.1.11",
+    "grunt-contrib-jshint": "~0.8.0",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-uglify": "~0.3.2",
+    "grunt-contrib-watch": "*",
+    "grunt-macreload": "*",
+    "grunt-css": "~0.5.4",
+    "grunt-markdown": "~0.5.0",
+    "grunt-angular-gettext": "^0.2.15"
+  },
+  "homepage": "https://github.com/supernetorg/insight-ui-komodo",
+  "keywords": [
+    "insight",
+    "blockchain",
+    "blockexplorer",
+    "komodo",
+    "bitcore",
+    "front-end"
+  ],
+  "license": "MIT",
+  "name": "insight-ui-komodo",
+  "repository": {
+    "type": "git",
+    "url": "git+https://git@github.com/DeckerSU/insight-ui-komodo.git"
+  },
+  "version": "0.4.0"
+}
