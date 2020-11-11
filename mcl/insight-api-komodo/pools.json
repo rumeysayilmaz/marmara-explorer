@@ -1,0 +1,37 @@
+[
+  {
+    "poolName": "Bitfly",
+    "url": "https://zcash.flypool.org/",
+    "searchStrings": [
+      "/flypool/"
+    ]
+  },
+  {
+    "poolName": "NaN",
+    "url": "",
+    "searchStrings": [
+      "/NaN"
+    ]
+  },
+  {
+    "poolName": "Stratum",
+    "url": "",
+    "searchStrings": [
+      "/nodeStratum/"
+    ]
+  },
+  {
+    "poolName": "CoinBlockers",
+    "url": "https://kmd.coinblockers.com",
+    "searchStrings": [
+      "coinblockers.com - https://coinblockers.com"
+    ]
+  },
+  {
+    "poolName": "Zmine",
+    "url": "https://zmine.io/",
+    "searchStrings": [
+      "{ZMINE.IO}"
+    ]
+  }
+]

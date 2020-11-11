@@ -1,0 +1,110 @@
+{
+  "_from": "git+https://git@github.com/DeckerSU/insight-api-komodo.git",
+  "_id": "insight-api-komodo@0.4.3",
+  "_inBundle": false,
+  "_integrity": "",
+  "_location": "/insight-api-komodo",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "git",
+    "raw": "git+https://git@github.com/DeckerSU/insight-api-komodo",
+    "rawSpec": "git+https://git@github.com/DeckerSU/insight-api-komodo",
+    "saveSpec": "git+https://git@github.com/DeckerSU/insight-api-komodo.git",
+    "fetchSpec": "https://git@github.com/DeckerSU/insight-api-komodo.git",
+    "gitCommittish": null
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "git+https://git@github.com/DeckerSU/insight-api-komodo.git#a87a34cc603a04d32d4ad3202b97e61a7ddbbcf5",
+  "_spec": "git+https://git@github.com/DeckerSU/insight-api-komodo",
+  "_where": "/Users/pbca26/Documents/insight-explorer/MORTY-explorer",
+  "bitcoreNode": "lib",
+  "bugs": {
+    "url": "https://github.com/supernetorg/insight-api-komodo/issues"
+  },
+  "bundleDependencies": false,
+  "contributors": [
+    {
+      "name": "Gustavo Cortez",
+      "email": "cmgustavo83@gmail.com"
+    },
+    {
+      "name": "Ivan Socolsky",
+      "email": "jungans@gmail.com"
+    },
+    {
+      "name": "Juan Ignacio Sosa Lopez",
+      "email": "bechilandia@gmail.com"
+    },
+    {
+      "name": "Manuel Araoz",
+      "email": "manuelaraoz@gmail.com"
+    },
+    {
+      "name": "Matias Alejo Garcia",
+      "email": "ematiu@gmail.com"
+    },
+    {
+      "name": "Mario Colque",
+      "email": "colquemario@gmail.com"
+    },
+    {
+      "name": "Patrick Nagurny",
+      "email": "patrick@bitpay.com"
+    },
+    {
+      "name": "Braydon Fuller",
+      "email": "braydon@bitpay.com"
+    },
+    {
+      "name": "Jack Grigg",
+      "email": "jack@z.cash"
+    }
+  ],
+  "dependencies": {
+    "async": "^2.6.2",
+    "bitcore-lib-komodo": "git+https://git@github.com/DeckerSU/bitcore-lib-komodo.git",
+    "bitcore-message-komodo": "git+https://git@github.com/DeckerSU/bitcore-message-komodo.git",
+    "body-parser": "^1.13.3",
+    "compression": "^1.6.1",
+    "lodash": "^2.4.1",
+    "lru-cache": "^4.0.1",
+    "morgan": "^1.7.0",
+    "request": "^2.64.0"
+  },
+  "deprecated": false,
+  "description": "A Komodo blockchain REST and web socket API service for Bitcore Node.",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^2.4.5",
+    "proxyquire": "^1.7.2",
+    "should": "^8.3.1",
+    "sinon": "^1.10.3"
+  },
+  "engines": {
+    "node": ">=0.12.0"
+  },
+  "homepage": "https://github.com/supernetorg/insight-api-komodo",
+  "keywords": [
+    "insight",
+    "insight api",
+    "blockchain",
+    "komodo api",
+    "blockchain api",
+    "json",
+    "bitcore"
+  ],
+  "license": "MIT",
+  "main": "lib",
+  "name": "insight-api-komodo",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/supernetorg/insight-api-komodo.git"
+  },
+  "scripts": {
+    "test": "NODE_ENV=test mocha -R spec --recursive"
+  },
+  "version": "0.4.3"
+}
