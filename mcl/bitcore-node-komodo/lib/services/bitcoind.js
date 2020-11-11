@@ -2106,9 +2106,9 @@ Bitcoin.prototype.getInfo = function(callback) {
   });
 };
 
-Bitcoin.prototype.getMarmaraAmountStat = function(callback) {
+Bitcoin.prototype.marmaraAmountStat = function(callback) {
   var self = this;
-  this.client.getMarmaraAmountStat(function(err, response) {
+  this.client.marmaraAmountStat(function(err, response) {
     if (err) {
       return callback(self._wrapRPCError(err));
     }
