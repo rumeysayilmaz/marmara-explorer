@@ -862,6 +862,7 @@ function($scope, $routeParams, $location, Global, Stats) {
       function(d) {
         $scope.loaded = 1;
         $scope.stats = d.info;
+        $scope.stats.total = d.info.TotalActivated + d.info.TotalLockedInLoops + d.info.TotalNormals;
         angular.extend($scope, d);
       },
       function(e) {
