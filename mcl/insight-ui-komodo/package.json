@@ -51,6 +51,9 @@
       "email": "jack@z.cash"
     }
   ],
+  "scripts": {
+    "start": "node main.js"
+  },
   "dependencies": {},
   "deprecated": false,
   "description": "An open-source frontend for the Insight API. The Insight API provides you with a convenient, powerful and simple way to query and broadcast data on the komodo network and build your own services with it.",
@@ -65,7 +68,9 @@
     "grunt-macreload": "*",
     "grunt-css": "~0.5.4",
     "grunt-markdown": "~0.5.0",
-    "grunt-angular-gettext": "^0.2.15"
+    "grunt-angular-gettext": "^0.2.15",
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0"
   },
   "homepage": "https://github.com/supernetorg/insight-ui-komodo",
   "keywords": [
