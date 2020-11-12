@@ -23,6 +23,7 @@ angular.module('insight',[
   'insight.search',
   'insight.charts',
   'insight.status',
+  'insight.stats',
   'insight.connection',
   'insight.currency',
   'insight.messages'
@@ -36,6 +37,7 @@ angular.module('insight.address', []);
 angular.module('insight.search', []);
 angular.module('insight.charts', []);
 angular.module('insight.status', []);
+angular.module('insight.stats', []);
 angular.module('insight.connection', []);
 angular.module('insight.currency', []);
 angular.module('insight.messages', []);
@@ -446,6 +448,9 @@ angular.module('insight.system').controller('HeaderController',
     }, {
       'title': 'Status',
       'link': 'status'
+    }, {
+      'title': 'Stats',
+      'link': 'stats'
     }];
 
     $scope.openScannerModal = function() {
@@ -846,6 +851,24 @@ angular.module('insight.status').controller('StatusController',
         });
     };
   });
+
+// Source: public/src/js/controllers/stats.js
+angular.module('insight.stats').controller('StatsController',
+function($scope, $routeParams, $location, Global, Stats) {
+  $scope.global = Global;
+
+  $scope.getStats = function(q) {
+    Stats.get({},
+      function(d) {
+        $scope.loaded = 1;
+        $scope.stats = d.info;
+        angular.extend($scope, d);
+      },
+      function(e) {
+        $scope.error = 'API ERROR: ' + e.data;
+      });
+  };
+});
 
 // Source: public/src/js/controllers/transactions.js
 angular.module('insight.transactions').controller('transactionsController',
@@ -1250,6 +1273,13 @@ angular.module('insight.status')
       return $resource(window.apiPrefix + '/peer');
     });
 
+// Source: public/src/js/services/stats.js
+angular.module('insight.stats')
+.factory('Stats',
+  function($resource) {
+    return $resource(window.apiPrefix + '/stats');
+  })
+
 // Source: public/src/js/services/transactions.js
 angular.module('insight.transactions')
   .factory('Transaction',
@@ -1442,6 +1472,10 @@ angular.module('insight').config(function($routeProvider) {
     when('/status/', {
       templateUrl: 'views/status.html',
       title: 'Status'
+    }).
+    when('/stats/', {
+      templateUrl: 'views/stats.html',
+      title: 'Stats'
     }).
     when('/messages/verify/', {
       templateUrl: 'views/messages_verify.html',
