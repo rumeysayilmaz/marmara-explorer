@@ -1,0 +1,44 @@
+<div data-ng-include src="'views/includes/connection.html'"></div>
+<section>
+  <div id="stats" class="row">
+
+    <div class="col-xs-12 col-md-12" data-ng-controller="StatsController" data-ng-init="getStats()">
+        <h2 translate class="marmara-stats-header">Marmara Stats</h2>
+      <table class="table" data-ng-controller="StatsController" data-ng-init="getStats()">
+        <tbody>
+          <tr>
+            <td translate>Total Activated</td>
+            <td class="text-right"> 
+              <span  data-ng-show="!stats.error">{{stats.TotalActivated}}</span>
+              <span class="text-danger" data-ng-show="stats.error">
+                <span  class="glyphicon glyphicon-warning-sign"></span>
+                {{sync.error}}
+              </span>
+            </td>
+          </tr>
+          <tr>
+            <td translate>Total Locked In Loops</td>
+            <td class="text-right"> 
+              <span  data-ng-show="!stats.error">{{stats.TotalLockedInLoops}}</span>
+              <span class="text-danger" data-ng-show="stats.error">
+                <span  class="glyphicon glyphicon-warning-sign"></span>
+                {{sync.error}}
+              </span>
+            </td>
+          </tr>
+          <tr>
+            <td translate>Total Normals</td>
+            <td class="text-right"> 
+              <span  data-ng-show="!stats.error">{{stats.TotalNormals}}</span>
+              <span class="text-danger" data-ng-show="stats.error">
+                <span  class="glyphicon glyphicon-warning-sign"></span>
+                {{sync.error}}
+              </span>
+            </td>
+          </tr> 
+        </tbody>
+      </table>   
+    </div> <!-- END OF COL-8 -->
+  </div>
+</section>
+
