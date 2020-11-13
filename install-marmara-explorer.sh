@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #
-# This bash script was taken from Decker (@DeckerSU) and modified to create MARMARA Explorer.
+# This bash script was taken from Decker (@DeckerSu) and modified to create MARMARA Explorer.
 #
 # @rumeysayilmaz @aklix 2020
 #
@@ -42,7 +42,7 @@ echo -e "$STEP_START[ Step 3 ]$STEP_END Creating MCL configs and deploy explorer
 
 # Start ports
 rpcport=33825
-zmqport=33826
+zmqport=3382
 webport=3001
 
 # MCL config
@@ -66,21 +66,21 @@ showmetrics=0
 
 EOF
 
-# Create MCL explorer and bitcore-node.json config for it
+# Create marmara explorer and bitcore-node.json config for it
 
-$CUR_DIR/node_modules/bitcore-node-komodo/bin/bitcore-node create Marmara-explorer
-cd Marmara-explorer
+$CUR_DIR/node_modules/bitcore-node-komodo/bin/bitcore-node create marmara-explorer
+cd marmara-explorer
 $CUR_DIR/node_modules/bitcore-node-komodo/bin/bitcore-node install git+https://git@github.com/marmarachain/insight-api-marmara git+https://git@github.com/marmarachain/insight-ui-marmara
 cd $CUR_DIR
 
-cat << EOF > $CUR_DIR/Marmara-explorer/bitcore-node.json
+cat << EOF > $CUR_DIR/marmara-explorer/bitcore-node.json
 {
   "network": "mainnet",
   "port": $webport,
   "services": [
     "bitcoind",
-    "insight-api-komodo",
-    "insight-ui-komodo",
+    "insight-api-marmara",
+    "insight-ui-marmara",
     "web"
   ],
   "servicesConfig": {
@@ -108,11 +108,11 @@ cat << EOF > $CUR_DIR/Marmara-explorer/bitcore-node.json
 EOF
 
 # creating launch script for Marmara explorer
-cat << EOF > $CUR_DIR/Marmara-explorer-start.sh
+cat << EOF > $CUR_DIR/marmara-explorer-start.sh
 #!/bin/bash
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm
-cd Marmara-explorer
+cd marmara-explorer
 nvm use v4; ./node_modules/bitcore-node-komodo/bin/bitcore-node start
 EOF
-chmod +x Marmara-explorer-start.sh
+chmod +x marmara-explorer-start.sh
