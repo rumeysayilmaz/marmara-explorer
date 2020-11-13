@@ -3,40 +3,26 @@
   <div id="stats" class="row">
     <div class="col-xs-12 col-md-12" data-ng-controller="StatsController" data-ng-init="getStats()">
       <h2 translate>Marmara Stats</h2>
-      <table class="table" data-ng-controller="StatsController" data-ng-init="getStats()">
-        <tbody>
-          <tr>
-            <td translate>Total Activated</td>
-            <td class="text-right"> 
-              <span  data-ng-show="!stats.error">{{stats.TotalActivated}}</span>
-              <span class="text-danger" data-ng-show="stats.error">
-                <span  class="glyphicon glyphicon-warning-sign"></span>
-                {{sync.error}}
-              </span>
-            </td>
-          </tr>
-          <tr>
-            <td translate>Total Locked In Loops</td>
-            <td class="text-right"> 
-              <span  data-ng-show="!stats.error">{{stats.TotalLockedInLoops}}</span>
-              <span class="text-danger" data-ng-show="stats.error">
-                <span  class="glyphicon glyphicon-warning-sign"></span>
-                {{sync.error}}
-              </span>
-            </td>
-          </tr>
-          <tr>
-            <td translate>Total Normals</td>
-            <td class="text-right"> 
-              <span  data-ng-show="!stats.error">{{stats.TotalNormals}}</span>
-              <span class="text-danger" data-ng-show="stats.error">
-                <span  class="glyphicon glyphicon-warning-sign"></span>
-                {{sync.error}}
-              </span>
-            </td>
-          </tr> 
-        </tbody>
-      </table>   
+      <div class="card-box-container" data-ng-show="!stats.error">
+        <div class="card-box tilebox-one" data-ng-show="stats.TotalActivated > -1">
+          <span class="icon"><img width="48" height="48" src="/img/coins.svg"></span> 
+          <h6 class="black-40 ttu tl">Activated</h6>
+          <h3 class="black tl stats-text-figure">{{stats.TotalActivated.toFixed(2)}}</h3>
+          <div class="sub-info pt3 pb4"><span class="badge badge-success mr-1">{{(stats.TotalActivated*100/stats.total).toFixed(2)}}%</span> <span class="text-muted black-40"></span></div>
+        </div>
+        <div class="card-box tilebox-one" data-ng-show="stats.TotalLockedInLoops > -1">
+          <span class="icon"><img width="48" height="48" src="/img/coins.svg"></span> 
+          <h6 class="black-40 ttu tl">Locked</h6>
+          <h3 class="black tl stats-text-figure">{{stats.TotalLockedInLoops.toFixed(2)}}</h3>
+          <div class="sub-info pt3 pb4"><span class="badge badge-success mr-1">{{(stats.TotalLockedInLoops*100/stats.total).toFixed(2)}}%</span> <span class="text-muted black-40"></span></div>
+        </div>
+        <div class="card-box tilebox-one" data-ng-show="stats.TotalNormals > -1">
+          <span class="icon"><img width="48" height="48" src="/img/coins.svg"></span> 
+          <h6 class="black-40 ttu tl">Normals</h6>
+          <h3 class="black tl stats-text-figure">{{stats.TotalNormals.toFixed(2)}}</h3>
+          <div class="sub-info pt3 pb4"><span class="badge badge-success mr-1">{{(stats.TotalNormals*100/stats.total).toFixed(2)}}%</span> <span class="text-muted black-40"></span></div>
+        </div>
+      </div> 
     </div> <!-- END OF COL-8 -->
   </div>
 </section>
