@@ -29,6 +29,36 @@ app.get('/status', (req, res) => {
 app.get('/stats', (req, res) => {
   res.sendFile(path.join(__dirname + '/public/index.html'));
 });
+app.get('/messages/verify', (req, res) => {
+  res.sendFile(path.join(__dirname + '/public/index.html'));
+});
+app.get('/tx/send/*', (req, res) => {
+  res.sendFile(path.join(__dirname + '/public/index.html'));
+});
+app.get('/blocks/*', (req, res) => {
+  res.sendFile(path.join(__dirname + '/public/index.html'));
+});
+app.get('/block/*', (req, res) => {
+  res.sendFile(path.join(__dirname + '/public/index.html'));
+});
+app.get('/block-index/*', (req, res) => {
+  res.sendFile(path.join(__dirname + '/public/index.html'));
+});
+app.get('/blocks-date/*', (req, res) => {
+  res.sendFile(path.join(__dirname + '/public/index.html'));
+});
+app.get('/tx/*', (req, res) => {
+  res.sendFile(path.join(__dirname + '/public/index.html'));
+});
+app.get('/address/*', (req, res) => {
+  res.sendFile(path.join(__dirname + '/public/index.html'));
+});
+app.get('/charts/*', (req, res) => {
+  res.sendFile(path.join(__dirname + '/public/index.html'));
+});
+app.get('/search/*', (req, res) => {
+  res.sendFile(path.join(__dirname + '/public/index.html'));
+});
 
 app.use('/', express.static(path.join(__dirname, 'public')));
 
