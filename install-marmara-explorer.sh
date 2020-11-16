@@ -1,15 +1,20 @@
 #!/usr/bin/env bash
-
-#
-# This bash script was taken from Decker (@DeckerSu) and modified to create MARMARA Explorer.
-#
-# @rumeysayilmaz @aklix 2020
-#
-# Additional info:
-# In case of failure during running of this script, please remove *-explorer folders, *-explorer-
-# start.sh files, and node_modules folder before you run ./install-marmara-explorer.sh again!.
+################################################################################
+# Script for installing MARMARA Explorer on Ubuntu 18.04 and 20.04
+# Authors: @rumeysayilmaz @aklix
+#-------------------------------------------------------------------------------
+# This bash script was taken from Decker (@DeckerSU) and modified for single
+# blockchain i.e. Marmara.
+#-------------------------------------------------------------------------------
+# sudo chmod +x install-marmara-explorer.sh
+# Execute the script to install Marmara Explorer:
+# ./install-marmara-explorer.sh
+#-------------------------------------------------------------------------------
+# In case of failure during running of this script, please remove *-explorer
+# folders, *-explorer- start.sh files, and node_modules folder before you
+# run ./install-marmara-explorer.sh again!.
 # This will prevent any incomplete installation errors.
-#
+################################################################################
 
 STEP_START='\e[1;47;42m'
 STEP_END='\e[0m'
@@ -42,7 +47,7 @@ echo -e "$STEP_START[ Step 3 ]$STEP_END Creating MCL configs and deploy explorer
 
 # Start ports
 rpcport=33825
-zmqport=3382
+zmqport=33826
 webport=3001
 
 # MCL config
