@@ -23,10 +23,21 @@ function StatsController(node) {
 StatsController.prototype.startSync = function() {
   var self = this;
 
+  try {
+    var localCache = fs.readFileSync(self.statsPath, 'UTF-8');
+    this.cache = JSON.parse(localCache);
+    this.lastBlockChecked = this.cache.marmaraAmountStatByBlocks[this.cache.marmaraAmountStatByBlocks.length - 1].BeginHeight + 1;
+    if (!this.cache.hasOwnProperty('marmaraAmountStatDaily')) this.cache.marmaraAmountStatDaily = {};
+  } catch (e) {
+    console.log(e);
+  }
+
   this.node.services.bitcoind.getInfo(function(err, result) {
     if (!err) {
       console.log('sync getInfo', result);
       self.currentBlock = result.blocks;
+      console.log('stats sync: ' + self.statsSyncInProgress);
+      if (!self.statsSyncInProgress) self.syncStatsByHeight();
     }
   });
 
@@ -35,9 +46,18 @@ StatsController.prototype.startSync = function() {
       if (!err) {
         console.log('sync getInfo', result);
         self.currentBlock = result.blocks;
+        console.log('stats sync: ' + self.statsSyncInProgress);
+        if (!self.statsSyncInProgress) self.syncStatsByHeight();
       }
     });
   }, TIP_SYNC_INTERVAL * 1000);
+
+  setInterval(() => {
+    fs.writeFile(self.statsPath, JSON.stringify(self.cache), function (err) {
+      if (err) return console.log(err);
+      console.log('marmara stats file updated');
+    });
+  }, 5 * 1000);
 };
 
 StatsController.prototype.syncStatsByHeight = function() {
