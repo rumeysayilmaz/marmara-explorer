@@ -51,31 +51,39 @@ explorer
 │	│   │   ...
 ```
 
-Having completed these steps, start the daemon with the starting parameters. Then, in the command line interface, run the bash script as follows:
+Having completed these steps, start the daemon with the starting parameters in another terminal: 
 
 ```sh
-
-
+./komodod -ac_name=MCL -ac_supply=2000000 -ac_cc=2 -addnode=37.148.210.158 -addnode=37.148.212.36 -addressindex=1 -spentindex=1 -ac_marmara=1 -ac_staked=75 -ac_reward=3000000000 &
 ```
 
-Step-by-step guide:
-1. Make sure you have all needed indexes enabled in MCL.conf:
+Then, in the command line interface, run the bash script as follows:
+```sh
+./marmara-explorer-start.sh
+```
+
+Important notes for running explorer given by @DeckerSU are stated below:
+- Having run ``./install-marmara-explorer.sh``, make sure you have all needed indexes enabled in MCL.conf:
+```
 txindex=1
 addressindex=1
 timestampindex=1
 spentindex=1
+```
 
-2. Make sure the chain is synced with these indexes enabled. Look into debug.log, at daemon startup you should see:
+- Make sure the chain is synced with these indexes enabled. Look into debug.log, at daemon startup you should see:
+```
 LoadBlockIndexDB: transaction index enabled 
 LoadBlockIndexDB: address index enabled
 LoadBlockIndexDB: timestamp index enabled
 LoadBlockIndexDB: spent index enabled
+```
+> Even if one of them is disabled - it's incorrect.
 
-If one is disabled - it's wrong.
-3. Make sure that getblockhashes RPC is working. If don't - you did a mistake somewhere. Re-check everything.
-4. If you don't sure where exactly you did a mistake, delete everything except MCL.conf and sync chain from scratch.
-5. Goal.
+- Make sure that getblockhashes RPC is working. If it's not working, re-check everything.
+- If one is not sure of the mistake being made, delete everything except MCL.conf and sync chain from scratch.
 
 ## Acknowledgements
 The installation script of @DeckerSU in [here](https://github.com/DeckerSU/komodo-explorers-install) was modified to work for single chain i.e. Marmarachain.  Special thanks to @DeckerSu for their hardwork and @pbca26 for their valuable contributions and guide while getting the explorer work.
 
+Improvements are welcomed through PR.
