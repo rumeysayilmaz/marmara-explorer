@@ -2,7 +2,7 @@
 
 // ref: https://stackoverflow.com/questions/4413590/javascript-get-array-of-dates-between-2-dates
 var getDaysArray = function(start, end) {
-  for (var arr = [], dt = new Date(start); dt <= end; dt.setDate(dt.getDate()+1)) {
+  for (var arr = [], dt = new Date(start); dt <= end; dt.setDate(dt.getDate() + 1)) {
     arr.push(new Date(dt).toUTCString());
   }
   return arr;
