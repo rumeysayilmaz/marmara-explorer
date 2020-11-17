@@ -84,8 +84,8 @@ cat << EOF > $CUR_DIR/marmara-explorer/bitcore-node.json
   "port": $webport,
   "services": [
     "bitcoind",
-    "insight-api-marmara",
-    "insight-ui-marmara",
+    "insight-api-komodo",
+    "insight-ui-komodo",
     "web"
   ],
   "servicesConfig": {
