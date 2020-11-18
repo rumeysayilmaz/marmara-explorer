@@ -213,13 +213,23 @@ StatsController.prototype.show30DaysStats = function(req, res) {
   var self = this;
   var type = req.query.type;
 
-  if (valueEnum.indexOf(type) > -1) {
-    res.jsonp({
-      info: this.thirtyDaysStats[type]
-    });
+  if (Object.keys(this.thirtyDaysStats).length) {
+    if (valueEnum.indexOf(type) > -1) {
+      res.jsonp({
+        info: this.thirtyDaysStats[type]
+      });
+    } else {
+      res.jsonp({
+        info: {
+          TotalNormals: this.thirtyDaysStats.TotalNormals,
+          TotalActivated: this.thirtyDaysStats.TotalActivated,
+          TotalLockedInLoops: this.thirtyDaysStats.TotalLockedInLoops
+        }
+      });
+    }
   } else {
     res.jsonp({
-      info: this.thirtyDaysStats
+      error: 'syncing stats'
     });
   }
 };
