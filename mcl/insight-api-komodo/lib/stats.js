@@ -6,6 +6,7 @@ var Common = require('./common');
 var helpers = require('./stats-helpers');
 
 var TIP_SYNC_INTERVAL = 10;
+var valueEnum = ['TotalNormals', 'TotalActivated', 'TotalLockedInLoops'];
 
 function StatsController(node) {
   this.node = node;
@@ -186,6 +187,41 @@ StatsController.prototype.generateStatsTotals = function() {
       this.cache.marmaraAmountStatDaily[daylist[i]] = groupStatsByBlocks[Date.parse(daylist[i])][groupStatsByBlocks[Date.parse(daylist[i])].length - 1];
     }
   } 
+};
+
+StatsController.prototype.generate30DaysStats = function() {
+  var dailyStatsArr = Object.keys(this.cache.marmaraAmountStatDaily);
+
+  for (var a = 0; a < valueEnum.length; a ++) {
+    var statsDateArr = [];
+    var statsValueArr = [];
+
+    for (var i = dailyStatsArr.length - 1; i > 0 && dailyStatsArr.length - 1 - i < 30; i--) {
+      var date = new Date(Date.parse(dailyStatsArr[i]));
+      statsDateArr.push(date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate());
+      statsValueArr.push(this.cache.marmaraAmountStatDaily[dailyStatsArr[i]][valueEnum[a]]);
+    }
+
+    this.thirtyDaysStats[valueEnum[a]] = {
+      date: statsDateArr,
+      value: statsValueArr,
+    };
+  }
+}
+
+StatsController.prototype.show30DaysStats = function(req, res) {
+  var self = this;
+  var type = req.query.type;
+
+  if (valueEnum.indexOf(type) > -1) {
+    res.jsonp({
+      info: this.thirtyDaysStats[type]
+    });
+  } else {
+    res.jsonp({
+      info: this.thirtyDaysStats
+    });
+  }
 };
 
 StatsController.prototype.showStats = function(req, res) {
