@@ -17,10 +17,21 @@ function StatsController(node) {
     marmaraAmountStatByBlocksDiff: [],
     marmaraAmountStatDaily: {},
   };
+  this.thirtyDaysStats = {};
   this.currentBlock = 0;
   this.lastBlockChecked = 1;
   this.statsSyncInProgress = false;
 }
+
+StatsController.prototype.showStatsSyncProgress = function(req, res) {
+  res.jsonp({
+    info: {
+      chainTip: this.currentBlock,
+      lastBlockChecked: this.lastBlockChecked,
+      progress: Number(this.lastBlockChecked * 100 / this.currentBlock).toFixed(2),
+    }
+  });
+};
 
 StatsController.prototype.startSync = function() {
   var self = this;
@@ -135,18 +146,20 @@ StatsController.prototype.syncStatsByHeight = function() {
 }
 
 StatsController.prototype.marmaraAmountStat = function(callback, override) {
+  var self = this;
+  console.log(this.statsPath);
+
   if (!override && this.cache.marmaraAmountStat) {
     console.log('marmaraAmountStat serve from cache');
     if (callback) callback(null, this.cache.marmaraAmountStat);
   } else {
     console.log('marmaraAmountStat update triggered');
-    var that = this;
     
-    this.node.services.bitcoind.marmaraAmountStat(function(err, result) {
+    this.node.services.bitcoind.marmaraAmountStat(1, 1, function(err, result) {
       if (err && callback) {
         return callback(err);
       }
-      that.cache.marmaraAmountStat = result;
+      self.cache.marmaraAmountStat = result;
       if (callback) callback(null, result);
     });
   }
@@ -157,6 +170,7 @@ StatsController.prototype.generateStatsTotals = function() {
   var startDate = new Date(new Date(this.cache.marmaraAmountStatByBlocksDiff[0].time * 1000).getFullYear() + '-' + (new Date(this.cache.marmaraAmountStatByBlocksDiff[0].time * 1000).getMonth() + 1 < 10 ? ( '0' + (new Date(this.cache.marmaraAmountStatByBlocksDiff[0].time * 1000).getMonth() + 1)) : new Date(this.cache.marmaraAmountStatByBlocksDiff[0].time * 1000).getMonth() + 1) + '-' + new Date(this.cache.marmaraAmountStatByBlocksDiff[0].time * 1000).getDate());
   var endDate = new Date(new Date(this.cache.marmaraAmountStatByBlocksDiff[this.cache.marmaraAmountStatByBlocksDiff.length - 1].time * 1000).getFullYear() + '-' + (new Date(this.cache.marmaraAmountStatByBlocksDiff[this.cache.marmaraAmountStatByBlocksDiff.length - 1].time * 1000).getMonth() + 1 < 10 ? ( '0' + (new Date(this.cache.marmaraAmountStatByBlocksDiff[this.cache.marmaraAmountStatByBlocksDiff.length - 1].time * 1000).getMonth() + 1)) : new Date(this.cache.marmaraAmountStatByBlocksDiff[this.cache.marmaraAmountStatByBlocksDiff.length - 1].time * 1000).getMonth() + 1) + '-' + new Date(this.cache.marmaraAmountStatByBlocksDiff[this.cache.marmaraAmountStatByBlocksDiff.length - 1].time * 1000).getDate());
   var daylist = helpers.getDaysArray(startDate, endDate);
+  //console.log(daylist);
 
   for (var i = 0; i < daylist.length; i++) {
     if (daylist[i + 1]) {
