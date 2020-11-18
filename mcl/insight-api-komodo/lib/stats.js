@@ -132,6 +132,7 @@ StatsController.prototype.syncStatsByHeight = function() {
               }
               //console.log('marmara stats at ht.cur ' + height + ' ht.prev ' + (height - 1), self.cache.marmaraAmountStatByBlocksDiff[height - 1]);
               
+              if (height > 2) self.generateStatsTotals();
               self.lastBlockChecked++;
               checkBlock(self.lastBlockChecked);
             }
@@ -167,26 +168,14 @@ StatsController.prototype.marmaraAmountStat = function(callback, override) {
 };
 
 StatsController.prototype.generateStatsTotals = function() {
-  var groupStatsByBlocks = [];
-  var startDate = new Date(new Date(this.cache.marmaraAmountStatByBlocksDiff[0].time * 1000).getFullYear() + '-' + (new Date(this.cache.marmaraAmountStatByBlocksDiff[0].time * 1000).getMonth() + 1 < 10 ? ( '0' + (new Date(this.cache.marmaraAmountStatByBlocksDiff[0].time * 1000).getMonth() + 1)) : new Date(this.cache.marmaraAmountStatByBlocksDiff[0].time * 1000).getMonth() + 1) + '-' + new Date(this.cache.marmaraAmountStatByBlocksDiff[0].time * 1000).getDate());
-  var endDate = new Date(new Date(this.cache.marmaraAmountStatByBlocksDiff[this.cache.marmaraAmountStatByBlocksDiff.length - 1].time * 1000).getFullYear() + '-' + (new Date(this.cache.marmaraAmountStatByBlocksDiff[this.cache.marmaraAmountStatByBlocksDiff.length - 1].time * 1000).getMonth() + 1 < 10 ? ( '0' + (new Date(this.cache.marmaraAmountStatByBlocksDiff[this.cache.marmaraAmountStatByBlocksDiff.length - 1].time * 1000).getMonth() + 1)) : new Date(this.cache.marmaraAmountStatByBlocksDiff[this.cache.marmaraAmountStatByBlocksDiff.length - 1].time * 1000).getMonth() + 1) + '-' + new Date(this.cache.marmaraAmountStatByBlocksDiff[this.cache.marmaraAmountStatByBlocksDiff.length - 1].time * 1000).getDate());
-  var daylist = helpers.getDaysArray(startDate, endDate);
-  //console.log(daylist);
+  var self = this;
 
-  for (var i = 0; i < daylist.length; i++) {
-    if (daylist[i + 1]) {
-      groupStatsByBlocks[Date.parse(daylist[i])] = [];
+  var blockDate = new Date(new Date(this.cache.marmaraAmountStatByBlocksDiff[this.cache.marmaraAmountStatByBlocksDiff.length - 1].time * 1000).getFullYear() + '-' + (new Date(this.cache.marmaraAmountStatByBlocksDiff[this.cache.marmaraAmountStatByBlocksDiff.length - 1].time * 1000).getMonth() + 1 < 10 ? ( '0' + (new Date(this.cache.marmaraAmountStatByBlocksDiff[this.cache.marmaraAmountStatByBlocksDiff.length - 1].time * 1000).getMonth() + 1)) : new Date(this.cache.marmaraAmountStatByBlocksDiff[this.cache.marmaraAmountStatByBlocksDiff.length - 1].time * 1000).getMonth() + 1) + '-' + new Date(this.cache.marmaraAmountStatByBlocksDiff[this.cache.marmaraAmountStatByBlocksDiff.length - 1].time * 1000).getDate()).toISOString().substr(0, 10);
 
-      for (var j = 0; j < this.cache.marmaraAmountStatByBlocksDiff.length; j++) {
-        if (this.cache.marmaraAmountStatByBlocksDiff[j].time < Date.parse(daylist[i + 1]) / 1000 &&
-            this.cache.marmaraAmountStatByBlocksDiff[j].time >= Date.parse(daylist[i]) / 1000) {
-          groupStatsByBlocks[Date.parse(daylist[i])].push(this.cache.marmaraAmountStatByBlocksDiff[j]);
-        }
-      }
-
-      this.cache.marmaraAmountStatDaily[daylist[i]] = groupStatsByBlocks[Date.parse(daylist[i])][groupStatsByBlocks[Date.parse(daylist[i])].length - 1];
-    }
-  } 
+  if (!this.cache.marmaraGroupBlocksByDay[blockDate]) this.cache.marmaraGroupBlocksByDay[blockDate] = [];
+  this.cache.marmaraGroupBlocksByDay[blockDate].push(this.cache.marmaraAmountStatByBlocksDiff[this.cache.marmaraAmountStatByBlocksDiff.length - 1]);
+  this.cache.marmaraAmountStatDaily[blockDate] = this.cache.marmaraGroupBlocksByDay[blockDate][this.cache.marmaraGroupBlocksByDay[blockDate].length - 1];
+  this.generate30DaysStats();
 };
 
 StatsController.prototype.generate30DaysStats = function() {
