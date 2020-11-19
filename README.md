@@ -15,6 +15,7 @@ Clone the git repo to local machine into a directory named explorer and inside t
 ```sh
 git clone https://github.com/marmarachain/marmara-explorer-install.git explorer
 cd explorer
+sudo chmod +x install-marmara-explorer.sh
 ./install-marmara-explorer.sh
 ```
 > Important Notice: In case of failure, remove *-explorer folders, *-explorer-start.sh files and node modules folder before running ./install-marmara-explorer.sh script again.
