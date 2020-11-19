@@ -233,6 +233,13 @@ InsightAPI.prototype.setupRoutes = function(app) {
   // Marmara stats route
   var stats = new StatsController(this.node);
   
+  // TODO: move back up, rewrite to use event emitter
+  InsightAPI.prototype.stop = function(callback) {
+    console.log('InsightAPI proto stop');
+    stats.dumpStatsData();
+    setImmediate(callback);
+  };  
+
   stats.marmaraAmountStat();
   setInterval(function () {
     console.log('sync syncMarmaraAmountStat');

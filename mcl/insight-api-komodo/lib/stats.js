@@ -3,7 +3,6 @@
 var fs = require('fs');
 
 var Common = require('./common');
-var helpers = require('./stats-helpers');
 
 var TIP_SYNC_INTERVAL = 10;
 var valueEnum = ['TotalNormals', 'TotalActivated', 'TotalLockedInLoops'];
@@ -22,6 +21,7 @@ function StatsController(node) {
   this.currentBlock = 0;
   this.lastBlockChecked = 1;
   this.statsSyncInProgress = false;
+  this.dataDumpInProgress = false;
 }
 
 StatsController.prototype.showStatsSyncProgress = function(req, res) {
@@ -67,10 +67,12 @@ StatsController.prototype.startSync = function() {
   }, TIP_SYNC_INTERVAL * 1000);
 
   setInterval(() => {
-    fs.writeFile(self.statsPath, JSON.stringify(self.cache), function (err) {
-      if (err) return console.log(err);
-      console.log('marmara stats file updated');
-    });
+    if (!self.dataDumpInProgress) {
+      fs.writeFile(self.statsPath, JSON.stringify(self.cache), function (err) {
+        if (err) return console.log(err);
+        console.log('marmara stats file updated');
+      });
+    }
   }, 5 * 1000);
 };
 
@@ -130,7 +132,6 @@ StatsController.prototype.syncStatsByHeight = function() {
                   time: block.time,
                 });
               }
-              //console.log('marmara stats at ht.cur ' + height + ' ht.prev ' + (height - 1), self.cache.marmaraAmountStatByBlocksDiff[height - 1]);
               
               if (height > 2) self.generateStatsTotals();
               self.lastBlockChecked++;
@@ -234,6 +235,12 @@ StatsController.prototype.showStats = function(req, res) {
       info: result
     });
   });
+};
+
+StatsController.prototype.dumpStatsData = function() {  
+  this.dataDumpInProgress = true;
+  fs.writeFileSync(this.statsPath, JSON.stringify(this.cache));
+  console.log('stats on node stop, dumped data');
 };
 
 module.exports = StatsController;
