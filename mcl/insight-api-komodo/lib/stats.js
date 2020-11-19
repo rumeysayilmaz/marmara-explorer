@@ -188,7 +188,7 @@ StatsController.prototype.generate30DaysStats = function() {
 
     for (var i = dailyStatsArr.length - 1; i > 0 && dailyStatsArr.length - 1 - i < 30; i--) {
       var date = new Date(Date.parse(dailyStatsArr[i]));
-      statsDateArr.push(date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate());
+      statsDateArr.push(date.getFullYear() + '-' + (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1).toString() : date.getMonth() + 1) + '-' + (date.getDate() < 10 ? '0' + date.getDate() : date.getDate()));
       statsValueArr.push(this.cache.marmaraAmountStatDaily[dailyStatsArr[i]][valueEnum[a]]);
     }
 
