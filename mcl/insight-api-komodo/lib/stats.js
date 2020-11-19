@@ -24,6 +24,17 @@ function StatsController(node) {
   this.dataDumpInProgress = false;
 }
 
+StatsController.prototype.kickStartStatsSync = function() {
+  // ref: https://github.com/pbca26/komodolib-js/blob/interim/src/time.js
+  var currentEpochTime = Date.now() / 1000;
+  var secondsElapsed = Number(currentEpochTime) - Number(this.lastBlockStatsProcessed / 1000);
+
+  if (Math.floor(secondsElapsed) > 60) {
+    console.log('kickstart stats sync');
+    this.statsSyncInProgress = false;
+  }
+};
+
 StatsController.prototype.showStatsSyncProgress = function(req, res) {
   res.jsonp({
     info: {
@@ -60,6 +71,7 @@ StatsController.prototype.startSync = function() {
       if (!err) {
         console.log('sync getInfo', result);
         self.currentBlock = result.blocks;
+        self.kickStartStatsSync();
         console.log('stats sync: ' + self.statsSyncInProgress);
         if (!self.statsSyncInProgress) self.syncStatsByHeight();
       }
@@ -148,26 +160,6 @@ StatsController.prototype.syncStatsByHeight = function() {
   checkBlock(self.lastBlockChecked);
 }
 
-StatsController.prototype.marmaraAmountStat = function(callback, override) {
-  var self = this;
-  console.log(this.statsPath);
-
-  if (!override && this.cache.marmaraAmountStat) {
-    console.log('marmaraAmountStat serve from cache');
-    if (callback) callback(null, this.cache.marmaraAmountStat);
-  } else {
-    console.log('marmaraAmountStat update triggered');
-    
-    this.node.services.bitcoind.marmaraAmountStat(1, 1, function(err, result) {
-      if (err && callback) {
-        return callback(err);
-      }
-      self.cache.marmaraAmountStat = result;
-      if (callback) callback(null, result);
-    });
-  }
-};
-
 StatsController.prototype.generateStatsTotals = function() {
   var self = this;
 
@@ -225,15 +217,10 @@ StatsController.prototype.show30DaysStats = function(req, res) {
 };
 
 StatsController.prototype.showStats = function(req, res) {
-  var self = this;
+  var result = this.cache.computed.marmaraAmountStatByBlocksDiff[this.cache.computed.marmaraAmountStatByBlocksDiff.length - 1];
 
-  this.marmaraAmountStat(function(err, result) {
-    if (err) {
-      return self.common.handleErrors(err, res);
-    }
-    res.jsonp({
-      info: result
-    });
+  res.jsonp({
+    info: result
   });
 };
 
