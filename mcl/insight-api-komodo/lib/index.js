@@ -238,15 +238,13 @@ InsightAPI.prototype.setupRoutes = function(app) {
     console.log('InsightAPI proto stop');
     stats.dumpStatsData();
     setImmediate(callback);
-  };  
+  };
 
-  stats.marmaraAmountStat();
-  setInterval(function () {
-    console.log('sync syncMarmaraAmountStat');
-    stats.marmaraAmountStat(null, true);
-  }, 120 * 1000); // every 120s
   app.get('/stats', this.cacheShort(), stats.showStats.bind(stats));
-
+  app.get('/stats/sync', this.cacheShort(), stats.showStatsSyncProgress.bind(stats));
+  app.get('/stats/chart', this.cacheShort(), stats.show30DaysStats.bind(stats));
+  stats.startSync();
+  
   // Address routes
   var messages = new MessagesController(this.node);
   app.get('/messages/verify', messages.verify.bind(messages));
@@ -271,7 +269,6 @@ InsightAPI.prototype.setupRoutes = function(app) {
       error: 'Not found'
     });
   });
-
 };
 
 InsightAPI.prototype.getPublishEvents = function() {
