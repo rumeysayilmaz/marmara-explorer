@@ -45,7 +45,8 @@
 }
 
 .card-box .badge:hover {
-  background-color: #356635;
+  background-color: #468847;
+  cursor: default;
 }
 
 .stats-text-figure {
@@ -68,6 +69,15 @@
 
 .navbar-form .form-control {
   max-width: 250px !important;
+}
+
+.marmara-stats-sync {
+  float: right;
+  font-size: 2rem;
+}
+
+.marmara-chart-spacing {
+  margin-bottom: 50px;
 }
 
 @media (max-width: 1000px) {

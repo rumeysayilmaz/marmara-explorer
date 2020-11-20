@@ -854,10 +854,12 @@ angular.module('insight.status').controller('StatusController',
 
 // Source: public/src/js/controllers/stats.js
 angular.module('insight.stats').controller('StatsController',
-function($scope, $routeParams, $location, Global, Stats) {
+function($scope, $routeParams, $location, $interval, Global, Stats, Sync, Chart) {
+  var syncInterval;
   $scope.global = Global;
+  $scope.sync = {};
 
-  $scope.getStats = function(q) {
+  $scope.getStats = function() {
     Stats.get({},
       function(d) {
         $scope.loaded = 1;
@@ -869,6 +871,110 @@ function($scope, $routeParams, $location, Global, Stats) {
         $scope.error = 'API ERROR: ' + e.data;
       });
   };
+
+  $scope.getSync = function() {
+    Sync.get({},
+      function(sync) {
+        if (sync.info.progress < 100) {
+          $scope.sync.status = 'syncing';
+          $scope.sync.lastBlockChecked = sync.info.lastBlockChecked;
+          $scope.sync.chainTip = sync.info.chainTip;
+          $scope.sync.progress = sync.info.progress;
+        } else {
+          $interval.cancel(syncInterval);
+          $scope.sync.status = '';
+        }
+      },
+      function(e) {
+        var err = 'Could not get sync information' + e.toString();
+        $scope.sync = {
+          error: err
+        };
+      });
+  };
+
+  $scope.getSync();
+  syncInterval = $interval(function() {
+    $scope.getSync();
+    $scope.getStats();
+    $scope.getChartData();
+  }, 5 * 1000);
+
+  $scope.getChartData = function() {
+    $scope.loading = true;
+    var chartTypeEnum = [{
+      title: 'Total Normals',
+      name: 'TotalNormals'
+    }, {
+      title: 'Total Activated',
+      name: 'TotalActivated'
+    }, {
+      title: 'Total Locked',
+      name: 'TotalLockedInLoops'
+    }];
+    var months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+
+    Chart.get({},
+      function(chartData) {
+        $scope.chartName = 'Historical stats';
+        
+        if (!chartData.hasOwnProperty('error')) {
+          for (var i = 0; i < chartTypeEnum.length; i++) {
+            var chart = {
+              bindto: '#chart' + (i + 1),
+              name: 'Historical stats',
+              "data":{
+                "x":"date",
+                "json": chartData.info[chartTypeEnum[i].name],
+                "names":{
+                  "date":"Date",
+                  "value": chartTypeEnum[i].title + " (last 30 days)"
+                },
+              },
+              axis : {
+                x : {
+                  type: 'timeseries',
+                  tick: {
+                    format: function (x) { return x.getDate() + ' ' + months[x.getMonth()] }
+                  }
+                }
+              }
+            };
+
+            c3.generate(chart);
+          }
+
+          $scope.loading = false;
+          $scope.syncing = false;
+        } else {
+          $scope.loading = false;
+          $scope.syncing = true;
+        }
+      },
+      function(e) {
+        var err = 'Could not get chart information' + e.toString();
+        $scope.chart = {
+          error: err
+        };
+      });
+  };
+
+  $scope.$on('$destroy', function() {
+    $interval.cancel(syncInterval);
+  });
 });
 
 // Source: public/src/js/controllers/transactions.js
@@ -1280,10 +1386,18 @@ angular.module('insight.status')
 
 // Source: public/src/js/services/stats.js
 angular.module('insight.stats')
-.factory('Stats',
-  function($resource) {
-    return $resource(window.apiPrefix + '/stats');
-  })
+  .factory('Stats',
+    function($resource) {
+      return $resource(window.apiPrefix + '/stats');
+    })
+  .factory('Sync',
+    function($resource) {
+      return $resource(window.apiPrefix + '/stats/sync');
+    })
+  .factory('Chart',
+    function($resource) {
+      return $resource(window.apiPrefix + '/stats/chart');
+    })
 
 // Source: public/src/js/services/transactions.js
 angular.module('insight.transactions')
