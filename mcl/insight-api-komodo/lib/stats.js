@@ -6,23 +6,40 @@ var Common = require('./common');
 
 var TIP_SYNC_INTERVAL = 10;
 var valueEnum = ['TotalNormals', 'TotalActivated', 'TotalLockedInLoops'];
+// TODO: trigger stats sync on new block event
 
 function StatsController(node) {
   this.node = node;
-  this.statsPath = this.node.configPath.replace('bitcore-node.json', 'marmara-stats.json');
+  this.statsPathRaw = this.node.configPath.replace('bitcore-node.json', 'marmara-stats-raw.json');
+  this.statsPathComputed = this.node.configPath.replace('bitcore-node.json', 'marmara-stats-computed.json');
   this.common = new Common({log: this.node.log});
   this.cache = {
-    marmaraAmountStat: '',
-    marmaraAmountStatByBlocks: [],
-    marmaraAmountStatByBlocksDiff: [],
-    marmaraAmountStatDaily: {},
+    raw: {
+      marmaraAmountStatByBlocks: [],
+    },
+    computed: {
+      marmaraAmountStatByBlocksDiff: [],
+      marmaraGroupBlocksByDay: {},
+      marmaraAmountStatDaily: {},
+    },
   };
-  this.thirtyDaysStats = {};
+  this.thirtyDaysStats = [];
   this.currentBlock = 0;
   this.lastBlockChecked = 1;
   this.statsSyncInProgress = false;
   this.dataDumpInProgress = false;
+  this.lastBlockStatsProcessed = 0;
 }
+
+StatsController.prototype.showStatsSyncProgress = function(req, res) {
+  res.jsonp({
+    info: {
+      chainTip: this.currentBlock,
+      lastBlockChecked: this.lastBlockChecked,
+      progress: Number(this.lastBlockChecked * 100 / this.currentBlock).toFixed(2),
+    }
+  });
+};
 
 StatsController.prototype.kickStartStatsSync = function() {
   // ref: https://github.com/pbca26/komodolib-js/blob/interim/src/time.js
@@ -35,24 +52,16 @@ StatsController.prototype.kickStartStatsSync = function() {
   }
 };
 
-StatsController.prototype.showStatsSyncProgress = function(req, res) {
-  res.jsonp({
-    info: {
-      chainTip: this.currentBlock,
-      lastBlockChecked: this.lastBlockChecked,
-      progress: Number(this.lastBlockChecked * 100 / this.currentBlock).toFixed(2),
-    }
-  });
-};
-
 StatsController.prototype.startSync = function() {
   var self = this;
 
   try {
-    var localCache = fs.readFileSync(self.statsPath, 'UTF-8');
-    this.cache = JSON.parse(localCache);
-    this.lastBlockChecked = this.cache.marmaraAmountStatByBlocks[this.cache.marmaraAmountStatByBlocks.length - 1].BeginHeight + 1;
-    if (!this.cache.hasOwnProperty('marmaraAmountStatDaily')) this.cache.marmaraAmountStatDaily = {};
+    var localCacheRaw = fs.readFileSync(self.statsPathRaw, 'UTF-8');
+    this.cache.raw = JSON.parse(localCacheRaw);
+    this.lastBlockChecked = this.cache.raw.marmaraAmountStatByBlocks[this.cache.raw.marmaraAmountStatByBlocks.length - 1].height + 1;
+    var localCacheComputed = fs.readFileSync(self.statsPathComputed, 'UTF-8');
+    this.cache.computed = JSON.parse(localCacheComputed);
+    if (!this.cache.computed.hasOwnProperty('marmaraAmountStatDaily')) this.cache.computed.marmaraAmountStatDaily = {};
   } catch (e) {
     console.log(e);
   }
@@ -78,11 +87,18 @@ StatsController.prototype.startSync = function() {
     });
   }, TIP_SYNC_INTERVAL * 1000);
 
+  this.generate30DaysStats();
+
   setInterval(() => {
     if (!self.dataDumpInProgress) {
-      fs.writeFile(self.statsPath, JSON.stringify(self.cache), function (err) {
+      fs.writeFile(self.statsPathRaw, JSON.stringify(self.cache.raw), function (err) {
         if (err) return console.log(err);
-        console.log('marmara stats file updated');
+        console.log('marmara raw stats file updated');
+      });
+
+      fs.writeFile(self.statsPathComputed, JSON.stringify(self.cache.computed), function (err) {
+        if (err) return console.log(err);
+        console.log('marmara computed stats file updated');
       });
     }
   }, 5 * 1000);
@@ -95,6 +111,7 @@ StatsController.prototype.syncStatsByHeight = function() {
   var checkBlock = function(height) {
     if (height < self.currentBlock) {
       self.statsSyncInProgress = true;
+      self.lastBlockStatsProcessed = Date.now();
 
       self.node.services.bitcoind.getBlockOverview(height, function(err, block) {
         if (!err) {
@@ -104,9 +121,8 @@ StatsController.prototype.syncStatsByHeight = function() {
             if (!err) {
               //console.log('sync marmaraAmountStat ht.' + height, result);
 
-              self.cache.marmaraAmountStatByBlocks.push({
-                BeginHeight: result.BeginHeight,
-                EndHeight: result.EndHeight,
+              self.cache.raw.marmaraAmountStatByBlocks.push({
+                height: result.BeginHeight,
                 TotalNormals: result.TotalNormals,
                 TotalPayToScriptHash: result.TotalPayToScriptHash,
                 TotalActivated: result.TotalActivated,
@@ -119,24 +135,22 @@ StatsController.prototype.syncStatsByHeight = function() {
                 SpentUnknownCC: result.SpentUnknownCC,
                 time: block.time,
               });
-
+              
               if (height > 1) {
                 console.log('marmara calc stat diff at ht.cur ' + height + ' ht.prev ' + (height - 1));
 
-                self.cache.marmaraAmountStatByBlocksDiff.push({
-                  BeginHeight: result.BeginHeight,
-                  EndHeight: result.EndHeight,
-                  TotalNormals: self.cache.marmaraAmountStatByBlocksDiff[height - 2].TotalNormals - result.SpentNormals + result.TotalNormals,
-                  TotalPayToScriptHash: self.cache.marmaraAmountStatByBlocksDiff[height - 2].TotalPayToScriptHash - result.SpentPayToScriptHash + result.TotalPayToScriptHash,
-                  TotalActivated: self.cache.marmaraAmountStatByBlocksDiff[height - 2].TotalActivated - result.SpentActivated + result.TotalActivated,
-                  TotalLockedInLoops: self.cache.marmaraAmountStatByBlocksDiff[height - 2].TotalLockedInLoops - result.SpentLockedInLoops + result.TotalLockedInLoops,
+                self.cache.computed.marmaraAmountStatByBlocksDiff.push({
+                  height: result.BeginHeight,
+                  TotalNormals: self.cache.computed.marmaraAmountStatByBlocksDiff[height - 2].TotalNormals - result.SpentNormals + result.TotalNormals,
+                  TotalPayToScriptHash: self.cache.computed.marmaraAmountStatByBlocksDiff[height - 2].TotalPayToScriptHash - result.SpentPayToScriptHash + result.TotalPayToScriptHash,
+                  TotalActivated: self.cache.computed.marmaraAmountStatByBlocksDiff[height - 2].TotalActivated - result.SpentActivated + result.TotalActivated,
+                  TotalLockedInLoops: self.cache.computed.marmaraAmountStatByBlocksDiff[height - 2].TotalLockedInLoops - result.SpentLockedInLoops + result.TotalLockedInLoops,
                   time: block.time,
                 });
 
               } else {
-                self.cache.marmaraAmountStatByBlocksDiff.push({
-                  BeginHeight: result.BeginHeight,
-                  EndHeight: result.EndHeight,
+                self.cache.computed.marmaraAmountStatByBlocksDiff.push({
+                  height: result.BeginHeight,
                   TotalNormals: result.TotalNormals,
                   TotalPayToScriptHash: result.TotalPayToScriptHash,
                   TotalActivated: result.TotalActivated,
@@ -145,7 +159,10 @@ StatsController.prototype.syncStatsByHeight = function() {
                 });
               }
               
-              if (height > 2) self.generateStatsTotals();
+              if (height > 2) {
+                // temp: nullify individual blocks data
+                self.generateStatsTotals();
+              }
               self.lastBlockChecked++;
               checkBlock(self.lastBlockChecked);
             }
@@ -163,16 +180,16 @@ StatsController.prototype.syncStatsByHeight = function() {
 StatsController.prototype.generateStatsTotals = function() {
   var self = this;
 
-  var blockDate = new Date(new Date(this.cache.marmaraAmountStatByBlocksDiff[this.cache.marmaraAmountStatByBlocksDiff.length - 1].time * 1000).getFullYear() + '-' + (new Date(this.cache.marmaraAmountStatByBlocksDiff[this.cache.marmaraAmountStatByBlocksDiff.length - 1].time * 1000).getMonth() + 1 < 10 ? ( '0' + (new Date(this.cache.marmaraAmountStatByBlocksDiff[this.cache.marmaraAmountStatByBlocksDiff.length - 1].time * 1000).getMonth() + 1)) : new Date(this.cache.marmaraAmountStatByBlocksDiff[this.cache.marmaraAmountStatByBlocksDiff.length - 1].time * 1000).getMonth() + 1) + '-' + new Date(this.cache.marmaraAmountStatByBlocksDiff[this.cache.marmaraAmountStatByBlocksDiff.length - 1].time * 1000).getDate()).toISOString().substr(0, 10);
+  var blockDate = new Date(new Date(this.cache.computed.marmaraAmountStatByBlocksDiff[this.cache.computed.marmaraAmountStatByBlocksDiff.length - 1].time * 1000).getFullYear() + '-' + (new Date(this.cache.computed.marmaraAmountStatByBlocksDiff[this.cache.computed.marmaraAmountStatByBlocksDiff.length - 1].time * 1000).getMonth() + 1 < 10 ? ( '0' + (new Date(this.cache.computed.marmaraAmountStatByBlocksDiff[this.cache.computed.marmaraAmountStatByBlocksDiff.length - 1].time * 1000).getMonth() + 1)) : new Date(this.cache.computed.marmaraAmountStatByBlocksDiff[this.cache.computed.marmaraAmountStatByBlocksDiff.length - 1].time * 1000).getMonth() + 1) + '-' + new Date(this.cache.computed.marmaraAmountStatByBlocksDiff[this.cache.computed.marmaraAmountStatByBlocksDiff.length - 1].time * 1000).getDate()).toISOString().substr(0, 10);
 
-  if (!this.cache.marmaraGroupBlocksByDay[blockDate]) this.cache.marmaraGroupBlocksByDay[blockDate] = [];
-  this.cache.marmaraGroupBlocksByDay[blockDate].push(this.cache.marmaraAmountStatByBlocksDiff[this.cache.marmaraAmountStatByBlocksDiff.length - 1]);
-  this.cache.marmaraAmountStatDaily[blockDate] = this.cache.marmaraGroupBlocksByDay[blockDate][this.cache.marmaraGroupBlocksByDay[blockDate].length - 1];
+  if (!this.cache.computed.marmaraGroupBlocksByDay[blockDate]) this.cache.computed.marmaraGroupBlocksByDay[blockDate] = [];
+  this.cache.computed.marmaraGroupBlocksByDay[blockDate].push(this.cache.computed.marmaraAmountStatByBlocksDiff[this.cache.computed.marmaraAmountStatByBlocksDiff.length - 1]);
+  this.cache.computed.marmaraAmountStatDaily[blockDate] = this.cache.computed.marmaraGroupBlocksByDay[blockDate][this.cache.computed.marmaraGroupBlocksByDay[blockDate].length - 1];
   this.generate30DaysStats();
 };
 
 StatsController.prototype.generate30DaysStats = function() {
-  var dailyStatsArr = Object.keys(this.cache.marmaraAmountStatDaily);
+  var dailyStatsArr = Object.keys(this.cache.computed.marmaraAmountStatDaily);
 
   for (var a = 0; a < valueEnum.length; a ++) {
     var statsDateArr = [];
@@ -181,14 +198,18 @@ StatsController.prototype.generate30DaysStats = function() {
     for (var i = dailyStatsArr.length - 1; i > 0 && dailyStatsArr.length - 1 - i < 30; i--) {
       var date = new Date(Date.parse(dailyStatsArr[i]));
       statsDateArr.push(date.getFullYear() + '-' + (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1).toString() : date.getMonth() + 1) + '-' + (date.getDate() < 10 ? '0' + date.getDate() : date.getDate()));
-      statsValueArr.push(this.cache.marmaraAmountStatDaily[dailyStatsArr[i]][valueEnum[a]]);
+      statsValueArr.push(this.cache.computed.marmaraAmountStatDaily[dailyStatsArr[i]][valueEnum[a]]);
     }
-
-    this.thirtyDaysStats[valueEnum[a]] = {
-      date: statsDateArr,
-      value: statsValueArr,
-    };
+    
+    if (statsDateArr.length && statsValueArr.length) {
+      this.thirtyDaysStats[valueEnum[a]] = {
+        date: statsDateArr,
+        value: statsValueArr,
+      };
+    }
   }
+
+  console.log('30 days stats generated');
 }
 
 StatsController.prototype.show30DaysStats = function(req, res) {
@@ -226,7 +247,8 @@ StatsController.prototype.showStats = function(req, res) {
 
 StatsController.prototype.dumpStatsData = function() {  
   this.dataDumpInProgress = true;
-  fs.writeFileSync(this.statsPath, JSON.stringify(this.cache));
+  fs.writeFileSync(this.statsPathRaw, JSON.stringify(this.cache.raw));
+  fs.writeFileSync(this.statsPathComputed, JSON.stringify(this.cache.computed));
   console.log('stats on node stop, dumped data');
 };
 
