@@ -125,7 +125,7 @@ chmod +x marmara-explorer-start.sh
 # create a service
 echo -e "$STEP_START[ Step 5 ]$STEP_END Creating a service for Marmara Explorer"
 
-cat <<EOF > $HOME/etc/systemd/system/marmarad.service
+cat <<EOF > /etc/systemd/system/marmarad.service
 
 [Unit]
 Description=Marmara Daemon Explorer
