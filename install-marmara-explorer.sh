@@ -120,7 +120,7 @@ export NVM_DIR="$HOME/.nvm"
 cd marmara-explorer
 nvm use v4; ./node_modules/bitcore-node-komodo/bin/bitcore-node start
 EOF
-chmod +x marmara-explorer-start.sh
+sudo chmod +x marmara-explorer-start.sh
 
 # create a service
 echo -e "$STEP_START[ Step 5 ]$STEP_END Creating a service for Marmara Explorer"
