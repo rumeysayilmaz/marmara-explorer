@@ -57,10 +57,20 @@ Having completed these steps, start the daemon with the starting parameters in a
 ```sh
 ./komodod -ac_name=MCL -ac_supply=2000000 -ac_cc=2 -addnode=37.148.210.158 -addnode=37.148.212.36 -addressindex=1 -spentindex=1 -ac_marmara=1 -ac_staked=75 -ac_reward=3000000000 &
 ```
-
 Then, in the command line interface, run the bash script as follows:
 ```sh
 ./marmara-explorer-start.sh
+```
+#### Make explorer and MCL runs as a service
+
+```sh
+sudo chmod +x marmarad_service.sh
+./marmard_service.sh
+cd
+sudo mv marmarad.service explorer-marmara.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable marmarad.service explorer-marmara.service
+sudo service marmara-explorer start
 ```
 
 Important notes for running explorer given by @DeckerSU are stated below:

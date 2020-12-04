@@ -122,26 +122,4 @@ nvm use v4; ./node_modules/bitcore-node-komodo/bin/bitcore-node start
 EOF
 sudo chmod +x marmara-explorer-start.sh
 
-# create a service
-echo -e "$STEP_START[ Step 5 ]$STEP_END Creating a service for Marmara Explorer"
 
-cat <<EOF > /etc/systemd/system/marmarad.service
-
-[Unit]
-Description=Marmara Daemon Explorer
-
-[Service]
-WorkingDirectory= $CUR_DIR/
-Type=simple
-ExecStart=/$CUR_DIR/marmara-explorer-start.sh
-Restart=on-failure
-
-[Install]
-WantedBy=multi-user.target
-
-EOF
-
-# Enable the service
-echo -e "$STEP_START[ Step 6 ]$STEP_END Enable the marmara daemon service"
-sudo systemctl daemon-reload
-sudo systemctl enable marmarad.service
