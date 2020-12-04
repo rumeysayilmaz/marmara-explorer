@@ -75,7 +75,7 @@ EOF
 
 $CUR_DIR/node_modules/bitcore-node-komodo/bin/bitcore-node create marmara-explorer
 cd marmara-explorer
-$CUR_DIR/node_modules/bitcore-node-komodo/bin/bitcore-node install git+https://git@github.com/marmarachain/insight-api-marmara git+https://git@github.com/marmarachain/insight-ui-marmara
+$CUR_DIR/node_modules/bitcore-node-komodo/bin/bitcore-node install git+https://git@github.com/marmarachain/insight-api-marmara git+https://git@github.com/marmarachain/insight-ui-marmara git+https://git@github.com/marmarachain/bitcoind-rpc
 cd $CUR_DIR
 
 cat << EOF > $CUR_DIR/marmara-explorer/bitcore-node.json
