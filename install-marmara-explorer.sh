@@ -46,8 +46,11 @@ npm install git+https://git@github.com/DeckerSU/bitcore-node-komodo
 echo -e "$STEP_START[ Step 3 ]$STEP_END Creating MCL configs and deploy explorers"
 
 # Start ports
-rpcport=33825
-zmqport=33826
+file="$HOME/.komodo/MCL/MCL.conf"
+rpcport=$(cat "$file"| grep rpcport)
+rpcuser=$(cat "$file"| grep rpcuser)
+rpcpassword=$(cat "$file"| grep rpcpassword)
+zmqport=$(($rpcport+1))
 webport=3001
 
 # MCL config
@@ -64,8 +67,8 @@ zmqpubrawtx=tcp://127.0.0.1:$zmqport
 zmqpubhashblock=tcp://127.0.0.1:$zmqport
 rpcallowip=127.0.0.1
 rpcport=$rpcport
-rpcuser=bitcoin
-rpcpassword=local321
+rpcuser=$rpcuser
+rpcpassword=$rpcpassword
 uacomment=bitcore
 showmetrics=0
 
@@ -94,8 +97,8 @@ cat << EOF > $CUR_DIR/marmara-explorer/bitcore-node.json
         {
           "rpchost": "127.0.0.1",
           "rpcport": $rpcport,
-          "rpcuser": "bitcoin",
-          "rpcpassword": "local321",
+          "rpcuser": $rpcuser,
+          "rpcpassword": $rpcpassword,
           "zmqpubrawtx": "tcp://127.0.0.1:$zmqport"
         }
       ]
