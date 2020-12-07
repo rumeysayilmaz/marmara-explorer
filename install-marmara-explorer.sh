@@ -41,7 +41,7 @@ export NVM_DIR="$HOME/.nvm"
 # switch node setup with nvm
 nvm install v4
 # npm install bitcore
-npm install git+https://git@github.com/DeckerSU/bitcore-node-komodo
+npm install git+https://git@github.com/marmarachain/bitcore-node-komodo
 
 echo -e "$STEP_START[ Step 3 ]$STEP_END Creating MCL configs and deploy explorers"
 
