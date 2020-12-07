@@ -61,7 +61,7 @@ Then, in the command line interface, run the bash script as follows:
 ```sh
 ./marmara-explorer-start.sh
 ```
-#### Make explorer and MCL runs as a service
+#### Make explorer and MCL run as a service
 
 ```sh
 sudo chmod +x marmarad_service.sh
