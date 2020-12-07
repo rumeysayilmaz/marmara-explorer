@@ -47,9 +47,9 @@ echo -e "$STEP_START[ Step 3 ]$STEP_END Creating MCL configs and deploy explorer
 
 # Start ports
 file="$HOME/.komodo/MCL/MCL.conf"
-rpcport=$(cat "$file"| grep rpcport)
-rpcuser=$(cat "$file"| grep rpcuser)
-rpcpassword=$(cat "$file"| grep rpcpassword)
+rpcport=$(cat "$file"| grep rpcport | sed 's/rpcport=//g')
+rpcuser=$(cat "$file"| grep rpcuser | sed 's/rpcuser=//g')
+rpcpassword=$(cat "$file"| grep rpcpassword | sed 's/rpcpassword=//g')
 zmqport=$(($rpcport+1))
 webport=3001
 
