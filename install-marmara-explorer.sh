@@ -97,8 +97,8 @@ cat << EOF > $CUR_DIR/marmara-explorer/bitcore-node.json
         {
           "rpchost": "127.0.0.1",
           "rpcport": $rpcport,
-          "rpcuser": $rpcuser,
-          "rpcpassword": $rpcpassword,
+          "rpcuser": "$rpcuser",
+          "rpcpassword": "$rpcpassword",
           "zmqpubrawtx": "tcp://127.0.0.1:$zmqport"
         }
       ]
