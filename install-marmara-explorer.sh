@@ -1,15 +1,20 @@
 #!/usr/bin/env bash
-
-#
-# This bash script was taken from Decker (@DeckerSU) and modified to create MARMARA Explorer.
-#
-# @rumeysayilmaz @aklix 2020
-#
-# Additional info:
-# In case of failure during running of this script, please remove *-explorer folders, *-explorer-
-# start.sh files, and node_modules folder before you run ./install-marmara-explorer.sh again!.
+################################################################################
+# Script for installing MARMARA Explorer on Ubuntu 18.04 and 20.04
+# Authors: @rumeysayilmaz @aklix
+#-------------------------------------------------------------------------------
+# This bash script was taken from Decker (@DeckerSU) and modified for single
+# blockchain i.e. Marmara.
+#-------------------------------------------------------------------------------
+# sudo chmod +x install-marmara-explorer.sh
+# Execute the script to install Marmara Explorer:
+# ./install-marmara-explorer.sh
+#-------------------------------------------------------------------------------
+# In case of failure during running of this script, please remove *-explorer
+# folders, *-explorer- start.sh files, and node_modules folder before you
+# run ./install-marmara-explorer.sh again!.
 # This will prevent any incomplete installation errors.
-#
+################################################################################
 
 STEP_START='\e[1;47;42m'
 STEP_END='\e[0m'
@@ -36,13 +41,16 @@ export NVM_DIR="$HOME/.nvm"
 # switch node setup with nvm
 nvm install v4
 # npm install bitcore
-npm install git+https://git@github.com/DeckerSU/bitcore-node-komodo
+npm install git+https://git@github.com/marmarachain/bitcore-node-komodo
 
 echo -e "$STEP_START[ Step 3 ]$STEP_END Creating MCL configs and deploy explorers"
 
 # Start ports
-rpcport=33825
-zmqport=33826
+file="$HOME/.komodo/MCL/MCL.conf"
+rpcport=$(cat "$file"| grep rpcport | sed 's/rpcport=//g')
+rpcuser=$(cat "$file"| grep rpcuser | sed 's/rpcuser=//g')
+rpcpassword=$(cat "$file"| grep rpcpassword | sed 's/rpcpassword=//g')
+zmqport=$(($rpcport+1))
 webport=3001
 
 # MCL config
@@ -59,21 +67,21 @@ zmqpubrawtx=tcp://127.0.0.1:$zmqport
 zmqpubhashblock=tcp://127.0.0.1:$zmqport
 rpcallowip=127.0.0.1
 rpcport=$rpcport
-rpcuser=bitcoin
-rpcpassword=local321
+rpcuser=$rpcuser
+rpcpassword=$rpcpassword
 uacomment=bitcore
 showmetrics=0
 
 EOF
 
-# Create MCL explorer and bitcore-node.json config for it
+# Create marmara explorer and bitcore-node.json config for it
 
-$CUR_DIR/node_modules/bitcore-node-komodo/bin/bitcore-node create Marmara-explorer
-cd Marmara-explorer
+$CUR_DIR/node_modules/bitcore-node-komodo/bin/bitcore-node create marmara-explorer
+cd marmara-explorer
 $CUR_DIR/node_modules/bitcore-node-komodo/bin/bitcore-node install git+https://git@github.com/marmarachain/insight-api-marmara git+https://git@github.com/marmarachain/insight-ui-marmara
 cd $CUR_DIR
 
-cat << EOF > $CUR_DIR/Marmara-explorer/bitcore-node.json
+cat << EOF > $CUR_DIR/marmara-explorer/bitcore-node.json
 {
   "network": "mainnet",
   "port": $webport,
@@ -89,8 +97,8 @@ cat << EOF > $CUR_DIR/Marmara-explorer/bitcore-node.json
         {
           "rpchost": "127.0.0.1",
           "rpcport": $rpcport,
-          "rpcuser": "bitcoin",
-          "rpcpassword": "local321",
+          "rpcuser": "$rpcuser",
+          "rpcpassword": "$rpcpassword",
           "zmqpubrawtx": "tcp://127.0.0.1:$zmqport"
         }
       ]
@@ -108,11 +116,13 @@ cat << EOF > $CUR_DIR/Marmara-explorer/bitcore-node.json
 EOF
 
 # creating launch script for Marmara explorer
-cat << EOF > $CUR_DIR/Marmara-explorer-start.sh
+cat << EOF > $CUR_DIR/marmara-explorer-start.sh
 #!/bin/bash
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm
-cd Marmara-explorer
+cd marmara-explorer
 nvm use v4; ./node_modules/bitcore-node-komodo/bin/bitcore-node start
 EOF
-chmod +x Marmara-explorer-start.sh
+sudo chmod +x marmara-explorer-start.sh
+
+
