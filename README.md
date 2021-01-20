@@ -6,8 +6,7 @@ Marmara explorer is based on the **master** branch of [https://github.com/marmar
 - This guide assumes that Marmara *has already been downloaded* to the machine.
 - Tested on Ubuntu 18.04.5 and Ubuntu 20.04
 
-> For detailed list of dependencies, check out the [package.json](https://github.com/DeckerSU/bitcore-node-komodo/blob/master/package.json) file. 
-> Follow the instructions given in this [page](https://github.com/marmarachain/insight-ui-marmara) for the translations.
+> For detailed list of dependencies, check out the [package.json](https://github.com/marmarachain/bitcore-node-komodo/blob/master/package.json) file.
 
 ### How to Install?
 Clone the git repo to local machine into a directory named explorer and inside the directory run the bash script to create the Marmara explorer and the relevant bitcore modules: 
@@ -33,7 +32,7 @@ explorer
 │   └───bitcore-node-komodo
 │       │   ...
 │
-│───Marmara-explorer
+│───marmara-explorer
 │    │   bitcore-node.json
 │    │   package.json
 │    │
@@ -94,7 +93,35 @@ LoadBlockIndexDB: spent index enabled
 - Make sure that getblockhashes RPC is working. If it's not working, re-check everything.
 - If one is not sure of the mistake being made, delete everything except MCL.conf and sync chain from scratch.
 
+## Multilanguage Support for Insight-ui-Marmara
+
+The README file in [here](https://github.com/marmarachain/insight-ui-marmara) explains the multilanguage support for the explorer. The steps are given briefly below:
+
+Under the directory ``explorer/marmara-explorer/node_modules/insight-ui-komodo`` run the following command to install the project dependencies listed in bower.json:
+
+```
+$ bower install
+
+```
+To generate a template.pot file in po/ folder, issue the following command in ``explorer/marmara-explorer/node_modules/insight-ui-komodo``:
+```
+$ ./node_modules/.bin/grunt nggettext_extract 
+
+```
+Having generated the template.pot file, use a PO editor such as Poedit software and follow this [guide](https://angular-gettext.rocketeer.be/dev-guide/translate/) to learn how to edit/update/import PO files from a generated POT file. Select the respective language. Having completed the translations, a PO file will be generated inside po/ folder. 
+
+Add the language inside the js file, ``insight-ui-komodo/public/src/js/controllers/footer.js``, under ```$scope.availableLanguages```.
+
+To compile and minify the web application's assets, run the following command (This command is also necessary to generate the angular javascript ``js/translations.js``.) :
+
+```
+$ grunt compile
+
+```
+> Every time a change is made in the html tags, simply run grunt compile again to generate a new .pot template and the angular javascript ``js/translations.js``. Then (if use Poedit), open .po file and choose update from POT File from Catalog menu.
+
 ## Acknowledgements
-The installation script of @DeckerSU in [here](https://github.com/DeckerSU/komodo-explorers-install) was modified to work for single chain i.e. Marmarachain.  Special thanks to @DeckerSu for their hardwork and @pbca26 for their valuable contributions and guide while getting the explorer work.
+The installation script of @DeckerSU in [here](https://github.com/DeckerSU/komodo-explorers-install) was modified to work for single chain i.e. Marmarachain.  
+Special thanks to @DeckerSu for their hardwork and special thanks to @pbca26 for their valuable contributions, assistance and guide while getting the explorer work.
 
 Improvements are welcomed through PR.
